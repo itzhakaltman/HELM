@@ -1,0 +1,18 @@
+helm create mychart
+helm create mycharttemp
+
+rm -rf mychart/templates/*
+
+helm install helm-demo-configmap ./mychart
+
+helm ls
+
+kubectl get all
+
+helm get manifest helm-demo-configmap
+
+kubectl describe configmaps mychart-configmap
+
+helm uninstall helm-demo-configmap
+
+

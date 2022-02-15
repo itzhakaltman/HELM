@@ -29,4 +29,82 @@ helm uninstall airflow
 
 ------------------------------------------------------------------------------------------------------------------------
 
+minikube status
+
+minikube start --driver=<driver_name>
+
+minikube start --driver=virtualbox
+
+
+kubectl create deployment hello-minikube --image=k8s.gcr.io/echoserver:1.10
+
+kubectl get pods
+
+minikube dashboard
+
+ minikube stop
+
+minikube delete
+
+ helm create mychart
+
+ helm install minikubetest ./mychart
+
+
+ kubectl get all
+ helm list
+
+ minikube dashboard
+
+  helm uninstall minikubetest
+
+ ~~~~~~~~~~~~~~~~
+
+
+ minikube stop
+
+minikube delete
+------------------------------------------------------------------------------------------------------------------------
+
+helm create die_zukunft
+
+die_zukunft:
+
+
+Chart.yaml
+LICENSE
+README.md
+values.yaml
+values.schema.json
+charts/
+crds/
+templates/
+templates/NOTES.txt
+
+
+
+rm -rf mychart/templates/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
