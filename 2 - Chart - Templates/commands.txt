@@ -23,14 +23,14 @@ helm ls
 
 helm get manifest firstvalue
 
- helm install --dry-run --debug --set costCode=CC00000 valueseteg ./mychart
+helm install --dry-run --debug --set costCode=CC00000 valueseteg ./mychart
 
-  helm install valueseteg ./mychart --set costCode=CC00000
+helm install valueseteg ./mychart --set costCode=CC00000
 
- helm get manifest valueseteg
+helm get manifest valueseteg
 
- kubectl describe configmaps valueseteg-configmap
+kubectl describe configmaps valueseteg-configmap
 
- helm ls
+helm ls
 
 helm uninstall valueseteg

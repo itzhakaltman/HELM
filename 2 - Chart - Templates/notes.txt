@@ -15,7 +15,6 @@ built-in objects
 
 https://helm.sh/docs/chart_template_guide/builtin_objects/
 
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -23,9 +22,7 @@ metadata:
 data:
   myvalue: "Sample Config Map"
 
-
 helm install releasename-test ./mychart
-
 
 helm get manifest releasename-test
 
@@ -37,26 +34,68 @@ helm uninstall releasename-test
 
 ------------------------------------------------------------------------------------------------------------------------
 
-
- mychart/values.yaml
-
-
- costCode: CC98112
+mychart/values.yaml
 
 
- costCode: {{ .Values.costCode }}
-
- helm install --debug --dry-run firstdryrun ./mychart
+costCode: CC98112
 
 
- helm install firstvalue ./mychart
+costCode: {{ .Values.costCode }}
+
+helm install --debug --dry-run firstdryrun ./mychart
 
 
- helm get manifest firstvalue
+helm install firstvalue ./mychart
+
+
+helm get manifest firstvalue
 
 kubectl describe configmaps firstvalue-configmap
 
+------------------------------------------------------------------------------------------------------------------------
+
+ chart functions
+ ~~~~~~~~~~~~~
+
+
+ https://masterminds.github.io/sprig/
+
+ https://godoc.org/text/template
+
+ projectCode: aazzxxyy
+ infra:
+   zone: a,b,c
+   region: us-e
+
+
+
+ Zone: {{ quote .Values.infra.zone }}
+ Region: {{ quote .Values.infra.region }}
+ ProjectCode: {{ upper .Values.projectCode }}
+
+
+
+
+helm install --dry-run --debug valueseteg ./mychart
 
 ------------------------------------------------------------------------------------------------------------------------
 
+ pipeline
+ ~~~~~~~
+
+  pipeline: {{ .Values.projectCode | upper | quote }}
+  now: {{ now | date "2006-01-02" | quote }}
+
+  helm install --dry-run --debug valueseteg ./mychart
+
+  ~~~~~~~~~~~~~~~~~~~~~~~``
+  default value
+
+  contact: {{ .Values.contact | default "1-800-123-0000" | quote }}
+
+  helm install --dry-run --debug valueseteg ./mychart
+
+  helm install --dry-run --debug --set contact=1-800-800-8888 valueseteg ./mychart
+
+------------------------------------------------------------------------------------------------------------------------
 
