@@ -15,4 +15,22 @@ kubectl describe configmaps mychart-configmap
 
 helm uninstall helm-demo-configmap
 
+helm install --debug --dry-run firstdryrun ./mychart
 
+helm install firstdryrun ./mychart
+
+helm ls
+
+helm get manifest firstvalue
+
+ helm install --dry-run --debug --set costCode=CC00000 valueseteg ./mychart
+
+  helm install valueseteg ./mychart --set costCode=CC00000
+
+ helm get manifest valueseteg
+
+ kubectl describe configmaps valueseteg-configmap
+
+ helm ls
+
+helm uninstall valueseteg
