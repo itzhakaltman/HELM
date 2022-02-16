@@ -99,3 +99,130 @@ helm install --dry-run --debug valueseteg ./mychart
 
 ------------------------------------------------------------------------------------------------------------------------
 
+  projectCode: aazzxxyy
+   infra:
+     zone: a,b,c
+     region: us-e
+
+ {{ if eq .Values.infra.region "us-e" }}ha: true{{ end }}
+
+ helm install --dry-run --debug controlif ./mychart
+
+ helm install controlif ./mychart
+
+ helm get manifest controlif
+
+ helm uninstall controlif
+
+   //Error
+
+   {{ if eq .Values.infra.region "us-e" }}
+     ha: true
+   {{ end }}
+
+    {{ if eq .Values.infra.region "us-e" }}
+    ha: true
+    {{ end }}
+
+    {{- if eq .Values.infra.region "us-e" }}
+    ha: true
+    {{- end }}
+
+   //Should not be done. Error
+
+   {{- if eq .Values.infra.region "us-e" -}}
+   ha: true
+   {{- end -}}
+
+------------------------------------------------------------------------------------------------------------------------
+
+ tags:
+   machine: frontdrive
+   rack: 4c
+   drive: ssd
+   vcard: 8g
+
+
+   {{- with .Values.tags }}
+   Machine Type: {{ .machine | default "NA" | quote }}
+   Rack ID: {{ .rack | quote }}
+   Storage Type: {{ .drive | upper | quote }}
+   Video Card: {{ .vcard | quote }}
+   {{- end }}
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+metadata:
+  name: {{ .Release.Name}}-configmap
+  labels:
+  {{- with .Values.tags }}
+    first: {{ .machine }}
+    second: {{ .rack }}
+    third: {{ .drive }}
+  {{- end }}
+
+
+~~~~
+
+  {{- with .Values.tags }}
+  Machine Type: {{ .machine | default "NA" | quote }}
+  Rack ID: {{ .rack | quote }}
+  Storage Type: {{ .drive | upper | quote }}
+  Video Card: {{ .vcard | quote }}
+  Release: {{ .Release.Name }}
+  {{- end }}
+
+# can be solved this issue using variables
+
+
+~~~~~
+
+  {{- with .Values.tags }}
+  Machine Type: {{ .machine | default "NA" | quote }}
+  Rack ID: {{ .rack | quote }}
+  Storage Type: {{ .drive | upper | quote }}
+  Video Card: {{ .vcard | quote }}
+  {{- end }}
+  Release: {{ .Release.Name }}
+
+
+helm install --dry-run --debug withscope ./mychart
+
+------------------------------------------------------------------------------------------------------------------------
+
+ Looping with Range
+  ~~~~~~~~~~~~~~~~~
+
+  LangUsed:
+    - Python
+    - Ruby
+    - Java
+    - Scala
+
+  LangUsed: |-
+     {{- range .Values.LangUsed }}
+     - {{ . | title | quote }}
+     {{- end }}
+
+ title - Title case functions
+
+
+ helm install --dry-run --debug controlif ./mychart
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   NetSpeed: |-
+     {{- range tuple "low" "medium" "high" }}
+     - {{ . }}
+     {{- end }}
+
+
+ helm install --dry-run --debug controlif ./mychart
+
+
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+------------------------------------------------------------------------------------------------------------------------
