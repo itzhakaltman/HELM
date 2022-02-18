@@ -1,0 +1,186 @@
+------------------------------------------------------------------------------------------------------------------------
+ChartMuseum Installation
+------------------------------------------------------------------------------------------------------------------------
+
+ curl -LO https://s3.amazonaws.com/chartmuseum/release/latest/bin/linux/amd64/chartmuseum
+
+ chmod +x ./chartmuseum
+
+ mv ./chartmuseum /usr/local/bin
+
+ chartmuseum --version
+
+ ~~~~~~~~
+
+ chartmuseum --help
+
+ chartmuseum --debug --port=8080 \
+   --storage="local" \
+  --storage-local-rootdir="./chartstorage"
+
+------------------------------------------------------------------------------------------------------------------------
+Add ChartMuseum repository
+------------------------------------------------------------------------------------------------------------------------
+
+helm repo list
+
+helm repo add chartmuseum http://localhost:8080
+
+helm repo list
+
+helm search repo
+
+helm search repo nginx
+
+helm search repo chartmuseum
+
+------------------------------------------------------------------------------------------------------------------------
+Add Chart to ChartMuseum repository
+------------------------------------------------------------------------------------------------------------------------
+
+ chartmuseum --debug --port=8080 \
+   --storage="local" \
+  --storage-local-rootdir="./chartstorage"
+
+  helm repo list
+  helm repo add mychartmuseumrepo http://192.168.0.52:8080
+  helm repo list
+
+helm search repo mychartmuseumrepo
+
+helm create repotest
+
+
+helm package repotest/
+mkdir mychartdist
+mv repotest-0.1.0.tgz mychartdist/
+
+
+cd mychartdist
+
+curl --data-binary "@repotest-0.1.1.tgz" http://192.168.0.52:8080/api/charts
+
+helm repo list
+
+------------------------------------------------------------------------------------------------------------------------
+Maintain Chart version
+------------------------------------------------------------------------------------------------------------------------
+
+ helm package repotest/
+
+ curl --data-binary "@repotest-0.1.1.tgz" http://192.168.0.52:8080/api/charts
+ helm search repo mychartmuseumrepo
+
+ helm repo update
+
+ helm search repo mychartmuseumrepo
+
+ helm search repo -l mychartmuseumrepo
+
+------------------------------------------------------------------------------------------------------------------------
+Maintain multiple Charts
+------------------------------------------------------------------------------------------------------------------------
+
+ helm create repotest2
+
+ helm package repotest2/
+
+ cp repotest2-0.1.0.tgz <chart museum storage>/
+
+
+ helm repo update
+
+ helm search repo mychartmuseumrepo
+
+
+helm search repo -l mychartmuseumrepo
+
+------------------------------------------------------------------------------------------------------------------------
+Chart push plugin
+------------------------------------------------------------------------------------------------------------------------
+
+ helm plugin install https://github.com/chartmuseum/helm-push.git
+
+ helm plugin list
+
+ helm create helmpushdemo
+
+ helm push helmpushdemo/ mychartmuseumrepo
+
+ helm repo update
+
+ helm search repo mychartmuseumrepo
+
+
+------------------------------------------------------------------------------------------------------------------------
+Maintain github as repository
+------------------------------------------------------------------------------------------------------------------------
+
+ mkdir helm_git_repo
+
+ cd helm_git_repo
+
+ echo "# helm_repo" >> README.md
+ git init
+ git add README.md
+ git commit -m "first commit"
+ git config --global user.email "muthu4all@gmail.com"
+ git config --global user.name "Muthukumar"
+ git commit -m "first commit"
+ git remote add origin https://github.com/<<useraccount>>/helm_git_repo.git
+ git push -u origin master
+
+
+ git remote add origin https://github.com/<<useraccount>>/helm_git_repo.git
+git push -u origin master
+
+cd ..
+
+helm create gitrepotest
+
+pwd
+
+cd helm_git_repo
+helm package /root/helm_demo/gitrepotest
+
+helm repo index .
+
+git add .
+
+git commit -m "my-repo"
+
+git push -u origin master
+
+https://raw.githubusercontent.com/<<useraccount>>/helm_git_repo/master
+
+------------------------------------------------------------------------------------------------------------------------
+Add Charts to github repository
+------------------------------------------------------------------------------------------------------------------------
+
+helm repo add --username muthu4all@gmail.com --password <<acccess token>> my-github-helm-repo 'https://raw.githubusercontent.com/muthu4all/helm_git_repo/master'
+
+helm search repo my-github-helm-repo
+
+helm repo update
+
+helm search repo -l mychartmuseumrepo
+
+helm create gitrepotest2
+
+cd gitrepotest2
+
+
+cd helm_git_repo
+helm package /root/helm_demo/gitrepotest
+
+helm repo index .
+
+git add .
+
+git commit -m "my-repo"
+
+git push -u origin master
+
+helm repo update
+
+helm search repo -l mychartmuseumrepo
