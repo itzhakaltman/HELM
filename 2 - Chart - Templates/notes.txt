@@ -320,20 +320,126 @@ Include scope
 helm install --dry-run --debug templatedemo ./mychart
 
 ------------------------------------------------------------------------------------------------------------------------
-
+Include template using keyword include
 ------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------------
+ {{- define "mychart.version" -}}
+ app_name: {{ .Chart.Name }}
+ app_version: "{{ .Chart.Version }}"
+ {{- end -}}
+
+ #error
+
+   labels:
+     {{- template "mychart.version" $ }}
+
+
+ helm install --dry-run --debug templatedemo ./mychart
+
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ metadata:
+   name: {{ .Release.Name}}-configmap
+   labels:
+ {{ include "mychart.version" . | indent 4 }}
+ data:
+   myvalue: "Sample Config Map"
+   costCode: {{ .Values.costCode }}
+   Zone: {{ quote .Values.infra.zone }}
+   Region: {{ quote .Values.infra.region }}
+   ProjectCode: {{ upper .Values.projectCode }}
+   pipeline: {{ .Values.projectCode | upper | quote }}
+   now: {{ now | date "2006-01-02"| quote }}
+   contact: {{ .Values.contact | default "1-800-123-0000" | quote }}
+   {{- range $key, $value := .Values.tags }}
+   {{ $key }}: {{ $value | quote }}
+   {{- end }}
+{{include "mychart.version" $ | indent 2 }}
+
+
+ helm install --dry-run --debug templatedemo ./mychart
 
 ------------------------------------------------------------------------------------------------------------------------
+Notes
+------------------------------------------------------------------------------------------------------------------------
+ templates/NOTES.txt
+
+ Thank you for support {{ .Chart.Name }}.
+
+ Your release is named {{ .Release.Name }}.
+
+ To learn more about the release, try:
+
+   $ helm status {{ .Release.Name }}
+   $ helm get all {{ .Release.Name }}
+   $ helm uninstall {{ .Release.Name }}
+
+
+ ~~~~~~~~~~~~~~~~~
+
+helm install notesdemo ./mychart
 
 ------------------------------------------------------------------------------------------------------------------------
-
+Sub Charts
 ------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------------
+ cd mychart/charts
+
+ helm create mysubchart
+
+ rm -rf mysubchart/templates/*.*
+
+ ~~~~~~~~~~~~
+
+ mychart/charts/mysubchart/values.yaml
+
+ dbhostname: mysqlnode
+
+ ~~~~~~~~~~
+
+ mychart/charts/mysubchart/templates/configmap.yaml
+
+ apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   name: {{ .Release.Name }}-innerconfig
+ data:
+   dbhost: {{ .Values.dbhostname }}
+
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ helm install --dry-run --debug mysubchart mychart/charts/mysubchart
+
+ ~~~~~~~~~~~~~~~~~~~~~
+ Over riding values from parent
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ mychart/values.yaml
+
+ mysubchart:
+   dbhostname: prodmyqlnode
+
+ helm install --dry-run --debug subchartoverride mychart
 
 ------------------------------------------------------------------------------------------------------------------------
+Sub Chart global
+------------------------------------------------------------------------------------------------------------------------
+
+ mychart/values.yaml
+
+ global:
+   orgdomain: com.muthu4all
+
+
+ mychart/charts/mysubchart/templates/configmap.yaml
+ and
+ mychart/templates/configmap.yaml
+
+
+ orgdomain: {{ .Values.global.orgdomain }}
+
+
+ helm install --dry-run --debug subchartoverride mychart
 
 ------------------------------------------------------------------------------------------------------------------------
 
