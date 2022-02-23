@@ -212,8 +212,7 @@ Kubernetes Job as Hooks
 ------------------------------------------------------------------------------------------------------------------------
 
 preinstalljob-hook-job.yaml
-
-
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -238,9 +237,11 @@ spec:
   completions: 1
   parallelism: 1
 
+--------------------------------------------------------------
+
 
 postinstalljob-hook-job.yaml
-
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -264,9 +265,9 @@ spec:
   completions: 1
   parallelism: 1
 
+--------------------------------------------------------------
 
 helm install hooktestjobinstall ./hooktest
-
 
 kubectl describe pod/preinstalljob-hook-job-m9zlx | grep -E 'Anno|Started:|Finished:'
 
@@ -274,46 +275,134 @@ kubectl describe pod/hooktestjobinstall-5d45b488dc-fjzhk | grep -E 'Anno|Started
 
 kubectl describe pod/postinstalljob-hook-job-pld5b | grep -E 'Anno|Started:|Finished:'
 
-
 helm delete hooktestjobinstall
 
 kubectl get jobs
+
 kubectl delete job/preinstalljob-hook-job
+
 kubectl delete job/postinstalljob-hook-job
 
 ------------------------------------------------------------------------------------------------------------------------
-
+Hook Execution using Weight
 ------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------------
+preinstalljob-hook-1.yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: preinstalljob-hook-1
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "-2"
 
-------------------------------------------------------------------------------------------------------------------------
+spec:
+  template:
+    spec:
+      containers:
+      - name: pre-install
+        image: busybox
+        imagePullPolicy: IfNotPresent
 
-------------------------------------------------------------------------------------------------------------------------
+        command: ['sh', '-c', 'echo pre-install Job Pod is Running Weight -2 and Sleep 2 ; sleep 2']
 
-------------------------------------------------------------------------------------------------------------------------
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
 
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------
+  backoffLimit: 3
+  completions: 1
+  parallelism: 1
 
 
+--------------------------------------------------------------
+
+preinstalljob-hook-2.yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: preinstalljob-hook-2
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "3"
+
+spec:
+  template:
+    spec:
+      containers:
+      - name: pre-install
+        image: busybox
+        imagePullPolicy: IfNotPresent
+
+        command: ['sh', '-c', 'echo pre-install Job Pod is Running Weight 3 and Sleep 3 ; sleep 3']
+
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
+
+  backoffLimit: 3
+  completions: 1
+  parallelism: 1
+
+--------------------------------------------------------------
+
+
+preinstalljob-hook-3.yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: preinstalljob-hook-3
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "5"
+
+spec:
+  template:
+    spec:
+      containers:
+      - name: pre-install
+        image: busybox
+        imagePullPolicy: IfNotPresent
+
+        command: ['sh', '-c', 'echo pre-install Job Pod is Running Weight 5 and Sleep 5; sleep 5']
+
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
+
+  backoffLimit: 3
+  completions: 1
+  parallelism: 1
+
+--------------------------------------------------------------
+
+helm list
+
+helm install hookweightdemo ./hooktest
+
+
+kubectl describe pod | grep -E 'Name:|Anno|Started:|Finished:'
+
+kubectl describe pod/preinstalljob-hook-1-g78s4 | grep -E 'Anno|Started:|Finished:'
+
+kubectl describe job/preinstalljob-hook-2 | grep -E 'Anno|Started:|Finished:'
+
+kubectl describe job/preinstalljob-hook-3 | grep -E 'Anno|Started:|Finished:'
+
+kubectl describe <<pod name>> | grep -E 'Anno|Started:|Finished:'
+
+
+helm delete hookweightdemo
+
+kubectl get jobs
+
+kubectl delete job/preinstalljob-hook-1
+
+kubectl delete job/preinstalljob-hook-2
+
+kubectl delete job/preinstalljob-hook-3
+
+kubectl get all
+
+------------------------------------------------------------------------------------------------------------------------
 
