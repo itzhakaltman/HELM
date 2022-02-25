@@ -26,7 +26,25 @@ helm package .
 
 curl --data-binary "@myfirstchart-0.1.0.tgz" http://192.168.64.2:30001/api/charts
 
+helm search repo myfi
+
+helm install firstchart cmuseum/myfirstchart
+
+helm list
+
+helm ununstall firstchart
+
+helm install firstchart cmuseum/myfirstchart --version 0.1.0
+
+curl -X DELETE http://192.168.64.2:30001/api/charts/myfirstchart/0.1.0
+
+helm repo update
+
+helm repo remove cmuseum
 
 
 
+helm dep list 
+
+helm dep build
 
