@@ -6,5 +6,27 @@ helm install prodchart . -f production.yaml
 
 helm install app . -f staging.yaml
 
+helm repo update
+
+helm pull stable/chartmuseum
+
+tar -xvf chartmuseum-2.12.0.tgz
+
+helm repo add cmuseum http://192.168.64.2:30001/
+
+helm repo list
+
+---
+
+cd myfirstchart
+
+helm package .
+
+---
+
+curl --data-binary "@myfirstchart-0.1.0.tgz" http://192.168.64.2:30001/api/charts
+
+
+
 
 
