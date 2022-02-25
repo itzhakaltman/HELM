@@ -1,0 +1,10 @@
+helm template . > templated.yaml
+
+helm template . | kubectl create -f -
+
+helm install prodchart . -f production.yaml
+
+helm install app . -f staging.yaml
+
+
+
